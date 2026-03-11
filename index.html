@@ -37,16 +37,18 @@
   .quiz-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 800; color: var(--yellow); letter-spacing: 0.03em; }
   .exit-btn {
     font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700;
-    color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.25); border-radius: 8px;
+    color: rgba(255,255,255); 
+    background: #ab0520;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
     padding: 5px 10px; cursor: pointer; letter-spacing: 0.04em;
     text-decoration: none; transition: all 0.15s ease;
     display: flex; align-items: center; gap: 5px;
   }
-  .exit-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
-  .progress-wrap { display: flex; align-items: center; gap: 10px; }
-  .progress-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); font-weight: 600; }
-  .progress-bar-track { width: 80px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+  .exit-btn:hover { background: #d54159; color: #fff; }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; flex-shrink:0;}
+  .progress-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); font-weight: 600; white-space: nowrap; padding-right:6px; }
+  .progress-bar-track { width: 70px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
   .progress-bar-fill { height: 100%; background: var(--yellow); border-radius: 3px; transition: width 0.4s ease; }
 
   /* ── Body ── */
@@ -200,7 +202,7 @@
         <span class="progress-label" id="prog-label">1 / 12</span>
         <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
       </div>
-      <a class="exit-btn" href="https://esrac.arizona.edu" title="Return to ESRAC">✕ Exit</a>
+      <a class="exit-btn" href="https://esrac.arizona.edu" title="Return to ESRAC">✕</a>
     </div>
   </header>
   <div class="quiz-body" id="quiz-body"></div>
