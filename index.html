@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mythbusters: Germs & Hygiene Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0c234b;
+    --navy-deep: #071530;
+    --navy-light: #4a7ab5;
+    --navy-pale: #e2e9eb;
+    --dark: #07111f;
+    --coral: #ff6b6b;
+    --yellow: #ffd166;
+    --white: #ffffff;
+    --text: #0d1e2e;
+    --correct: #1a7a4a;
+    --correct-bg: #d4f0e0;
+    --wrong: #c0392b;
+    --wrong-bg: #fde8e8;
+  }
+
+  html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--dark); color: var(--text); overflow: hidden; }
+  .quiz-shell { height: 100%; display: flex; flex-direction: column; }
+
+  .quiz-header {
+    background: var(--navy-deep);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 3px solid var(--navy-light);
+  }
+
+  .quiz-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 800; color: var(--yellow); letter-spacing: 0.03em; }
+
+  .progress-wrap { display: flex; align-items: center; gap: 10px; }
+  .progress-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); font-weight: 600; }
+  .progress-bar-track { width: 80px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--yellow); border-radius: 3px; transition: width 0.4s ease; }
+
+  .quiz-body {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    background: linear-gradient(180deg, #9444ab 0%, var(--dark) 80%);
+  }
+
+  .question-card {
+    background: var(--navy); border-radius: 18px; overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  .question-number {
+    background: var(--navy);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 8px 20px;
+  }
+
+  .question-card-inner {
+    background: var(--white);
+    border-radius: 0 0 14px 14px;
+  }
+
+  .question-text { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 700; padding: 18px 20px 12px; line-height: 1.4; color: var(--navy-deep); }
+  .select-hint { font-size: 0.78rem; font-weight: 700; color: var(--navy); padding: 0 20px 10px; }
+
+  .options-list { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  .option-btn {
+    width: 100%; padding: 12px 16px;
+    background: var(--navy-pale); border: 2px solid transparent; border-radius: 12px;
+    font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 600;
+    color: var(--text); text-align: left; cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .option-btn:hover:not(:disabled) { background: #c8d8e8; border-color: var(--navy); transform: translateX(3px); }
+  .option-btn.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .option-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+  .option-btn.reveal-correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.multi-selected { background: #c8d8e8; border-color: var(--navy); }
+
+  .feedback-box {
+    margin: 0 16px 16px; padding: 14px 16px; border-radius: 12px;
+    font-size: 0.88rem; line-height: 1.6; display: none;
+    animation: fadeSlide 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: var(--correct-bg); border-left: 4px solid var(--correct); color: #0a4030; }
+  .feedback-box.wrong-fb { background: var(--navy-pale); border-left: 4px solid var(--navy); color: var(--text); }
+  .feedback-label { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+
+  .action-row { padding: 0 16px 16px; display: flex; gap: 10px; }
+
+  .submit-btn, .next-btn {
+    flex: 1; padding: 13px; border: none; border-radius: 12px;
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.15s ease; letter-spacing: 0.03em;
+  }
+  .submit-btn { background: var(--navy); color: var(--white); }
+  .submit-btn:hover { background: var(--navy-deep); }
+  .submit-btn:disabled { opacity: 0.35; cursor: default; }
+  .next-btn { background: var(--yellow); color: var(--dark); display: none; }
+  .next-btn.show { display: block; }
+  .next-btn:hover { background: #f0c050; }
+
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .score-screen {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; background: var(--white); border-radius: 18px;
+    padding: 40px 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    animation: fadeSlide 0.4s ease;
+  }
+  .score-screen.show { display: flex; }
+  .score-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+  .score-heading { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--navy-deep); margin-bottom: 8px; }
+  .score-number { font-size: 3rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: var(--navy); margin: 8px 0; }
+  .score-message { font-size: 0.95rem; color: #555; line-height: 1.5; margin-bottom: 24px; }
+  .restart-btn { background: var(--navy); color: var(--white); border: none; border-radius: 12px; padding: 13px 32px; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+  .restart-btn:hover { background: var(--navy-deep); }
+
+  .quiz-body::-webkit-scrollbar { width: 4px; }
+  .quiz-body::-webkit-scrollbar-track { background: transparent; }
+  .quiz-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="quiz-shell">
+  <header class="quiz-header">
+    <div class="quiz-title">🦠 Germ Mythbusters</div>
+    <div class="progress-wrap">
+      <span class="progress-label" id="prog-label">1 / 12</span>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill" style="width:8.33%"></div></div>
+    </div>
+  </header>
+  <div class="quiz-body" id="quiz-body"></div>
+</div>
+
+<script>
+const questions = [
+  { q: "TRUE or FALSE: Regular exposure to germs is good to help build immunity.", type: "tf", options: ["True","False"], correct: [1], feedback: "You can get sick from the same germ multiple times, and there are over 200 viruses that cause the common cold — which means immunity is never complete." },
+  { q: "How many colds do children typically get each year?", type: "mc", options: ["1–2","3–5","6–10","11+"], correct: [2], feedback: "Children commonly experience 6–10 colds per year, while adults average 2–4." },
+  { q: "How long can some cold and flu viruses survive on surfaces like doorknobs or countertops?", type: "mc", options: ["A few minutes","A few hours","A few days","A week or more"], correct: [2], feedback: "Some viruses can survive on hard surfaces for up to three days, increasing the chance of indirect transmission." },
+  { q: "What percentage of people wash their hands after using the restroom?", type: "mc", options: ["90%","75%","50%","25%"], correct: [2], feedback: "Only about 50% of the population washes their hands after using the restroom. Those that do often don't wash them long enough (20–30 seconds) to eliminate germs." },
+  { q: "TRUE or FALSE: I clean my home routinely — if it looks clean, I must have killed the germs.", type: "tf", options: ["True","False"], correct: [1], feedback: "Just because a room looks clean doesn't mean it is. Germs like bacteria and viruses are invisible to the naked eye. Only disinfectants designed to kill germs are effective on hard, non-porous surfaces." },
+  { q: "TRUE or FALSE: Cold weather causes colds.", type: "tf", options: ["True","False"], correct: [1], feedback: "Colds are caused by viruses, not cold temperatures. People tend to get sick more often in colder weather because they spend more time indoors, where viruses spread more easily." },
+  { q: "TRUE or FALSE: To disinfect surfaces in your home, spray the disinfectant and wipe it off right away.", type: "tf", options: ["True","False"], correct: [1], feedback: "Most disinfectants need to stay wet for a certain amount of time to kill germs. Check the product label for the recommended contact time." },
+  { q: "Which public place is often NOT the most contaminated, despite common belief?", type: "mc", options: ["Children's playground equipment","Shopping cart handles","Vending machine buttons","Public bathrooms"], correct: [3], feedback: "Public bathrooms often rank lower than many other public surfaces because they are cleaned and disinfected more frequently — ranking behind playground equipment, shopping cart handles, and vending machine buttons." },
+  { q: "TRUE or FALSE: You should wash your hands with water as hot as you can stand it to effectively kill germs.", type: "tf", options: ["True","False"], correct: [1], feedback: "To kill germs with heat, water would need to be boiling. Use comfortable, lukewarm water instead. Soap and friction do the real work by breaking down germs and removing them from your hands." },
+  { q: "Which item in the home typically hosts the most bacteria per square inch?", type: "mc", options: ["The toilet seat","The kitchen sponge","The TV remote","A dog's chew toy"], correct: [1], feedback: "Kitchen sponges are often the germiest item in the home. Their porous material, moisture, and trapped food particles make them ideal for bacterial growth — often harboring more bacteria than a toilet seat." },
+  { q: "Which of the following items often have more germs than a toilet seat? (Select all that apply)", type: "multi", options: ["Child car seat","Cell phone","Kitchen sink","Reusable water bottle"], correct: [0,1,2,3], feedback: "Toilet seats are usually cleaned and disinfected regularly. In contrast, phones, water bottles, sinks, and car seats are touched frequently but cleaned less often. Moisture, food residue, and hard-to-clean areas allow germs to persist and grow." },
+  { q: "If you drop a piece of food on a visibly clean floor, how long does it take for bacteria to transfer onto it?", type: "mc", options: ["10 seconds","5 seconds","3 seconds","Almost instantaneously"], correct: [3], feedback: "There's no such thing as a 5- or 10-second rule. Once food hits the floor, microbes can move onto it immediately, even if the surface looks clean." }
+];
+
+let current = 0, score = 0, answered = false, multiSelected = [];
+
+function getScoreMessage(s, t) {
+  const p = s/t;
+  if (p === 1) return "Perfect score! You're a germ-busting expert! 🏆";
+  if (p >= 0.8) return "Great job! You've got solid hygiene know-how.";
+  if (p >= 0.6) return "Not bad! A few myths busted, a few still to conquer.";
+  return "Lots of myths out there! Hopefully you picked up some useful info.";
+}
+
+function render() {
+  const body = document.getElementById('quiz-body');
+  if (current >= questions.length) {
+    body.innerHTML = '';
+    const sc = document.createElement('div');
+    sc.className = 'score-screen show';
+    sc.innerHTML = `<div class="score-emoji">🦠</div><div class="score-heading">Quiz Complete!</div><div class="score-number">${score} / ${questions.length}</div><div class="score-message">${getScoreMessage(score, questions.length)}</div><button class="restart-btn" onclick="restart()">Try Again</button>`;
+    body.appendChild(sc);
+    return;
+  }
+  answered = false; multiSelected = [];
+  const q = questions[current];
+  document.getElementById('prog-label').textContent = `${current+1} / ${questions.length}`;
+  document.getElementById('prog-fill').style.width = `${(current/questions.length)*100}%`;
+  const isMulti = q.type === 'multi';
+  const optsHTML = q.options.map((opt,i) => `<button class="option-btn" data-idx="${i}" onclick="${isMulti ? 'toggleMulti(this,'+i+')' : 'answer('+i+')'}">${opt}</button>`).join('');
+  body.innerHTML = `<div class="question-card"><div class="question-number">Question ${current+1} of ${questions.length}</div><div class="question-card-inner"><div class="question-text">${q.q}</div>${isMulti ? '<div class="select-hint">✦ Select all that apply</div>' : ''}<div class="options-list" id="opts">${optsHTML}</div><div class="feedback-box" id="feedback"></div><div class="action-row">${isMulti ? '<button class="submit-btn" id="submit-btn" onclick="submitMulti()" disabled>Submit</button>' : ''}<button class="next-btn" id="next-btn" onclick="nextQ()">${current+1 < questions.length ? 'Next →' : 'See Results'}</button></div></div></div>`;
+  body.scrollTop = 0;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const isCorrect = q.correct.includes(idx);
+  if (isCorrect) score++;
+  document.querySelectorAll('.option-btn').forEach((btn,i) => {
+    btn.disabled = true;
+    if (i === idx) btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect && q.correct.includes(i)) btn.classList.add('reveal-correct');
+  });
+  showFeedback(isCorrect);
+}
+
+function toggleMulti(btn, idx) {
+  if (answered) return;
+  const pos = multiSelected.indexOf(idx);
+  if (pos === -1) { multiSelected.push(idx); btn.classList.add('multi-selected'); }
+  else { multiSelected.splice(pos,1); btn.classList.remove('multi-selected'); }
+  document.getElementById('submit-btn').disabled = multiSelected.length === 0;
+}
+
+function submitMulti() {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const correct = JSON.stringify([...q.correct].sort()) === JSON.stringify([...multiSelected].sort());
+  if (correct) score++;
+  document.querySelectorAll('.option-btn').forEach((btn,i) => {
+    btn.disabled = true; btn.classList.remove('multi-selected');
+    if (multiSelected.includes(i) && q.correct.includes(i)) btn.classList.add('correct');
+    else if (multiSelected.includes(i)) btn.classList.add('wrong');
+    else if (q.correct.includes(i)) btn.classList.add('reveal-correct');
+  });
+  document.getElementById('submit-btn').style.display = 'none';
+  showFeedback(correct);
+}
+
+function showFeedback(isCorrect) {
+  const fb = document.getElementById('feedback');
+  fb.className = `feedback-box show ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
+  fb.innerHTML = `<div class="feedback-label">${isCorrect ? '✓ Correct!' : '✗ Not quite'}</div>${questions[current].feedback}`;
+  document.getElementById('next-btn').classList.add('show');
+  setTimeout(() => fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
+function nextQ() { current++; render(); }
+function restart() { current = 0; score = 0; render(); }
+render();
+</script>
+</body>
+</html>
